@@ -1,19 +1,62 @@
-import { create, insert, search } from 'https://cdn.jsdelivr.net/npm/@orama/orama@latest/+esm';
+const webview = document.getElementById("webview");
+const addressBar = document.getElementById("addressBar");
+const favoritesMenu = document.getElementById("favorites");
+let historyStack = [];
+let currentIndex = -1;
 
-const db = await create({
-  schema: { title: 'string', content: 'string' }
-});
+function navigate() {
+  let url = addressBar.value;
+  if (!url.startsWith("http")) {
+    url = "https://www.bing.com/search?q=" + encodeURIComponent(url);
+  }
+  webview.src = url;
+  historyStack.push(url);
+  currentIndex = historyStack.length - 1;
+}
 
-// Demo data
-await insert(db, { title: 'Microsoft Edge', content: 'A fast, secure browser by Microsoft.' });
-await insert(db, { title: 'GitHub Pages', content: 'Free hosting for static websites.' });
-await insert(db, { title: 'Orama', content: 'Lightweight JavaScript search engine.' });
+function goBack() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    webview.src = historyStack[currentIndex];
+  }
+}
 
-window.doSearch = async () => {
-  const query = document.getElementById('searchBox').value;
-  const results = await search(db, { term: query });
-  const resultsDiv = document.getElementById('results');
-  resultsDiv.innerHTML = results.hits.map(hit =>
-    `<div class="result"><b>${hit.document.title}</b>: ${hit.document.content}</div>`
-  ).join('');
-};
+function goForward() {
+  if (currentIndex < historyStack.length - 1) {
+    currentIndex++;
+    webview.src = historyStack[currentIndex];
+  }
+}
+
+function reloadPage() {
+  if (currentIndex >= 0) {
+    webview.src = historyStack[currentIndex];
+  }
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+function addFavorite() {
+  if (currentIndex >= 0) {
+    const url = historyStack[currentIndex];
+    const option = document.createElement("option");
+    option.value = url;
+    option.textContent = url;
+    favoritesMenu.appendChild(option);
+  }
+}
+
+function loadFavorite() {
+  const url = favoritesMenu.value;
+  if (url) {
+    webview.src = url;
+    historyStack.push(url);
+    currentIndex = historyStack.length - 1;
+  }
+}
