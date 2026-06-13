@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edge-Style Web Browser</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <button onclick="goBack()">⬅️</button>
+    <button onclick="goForward()">➡️</button>
+    <button onclick="reloadPage()">🔄</button>
+    <input id="addressBar" type="text" placeholder="Enter URL or search...">
+    <button onclick="navigate()">Go</button>
+    <button onclick="toggleFullscreen()">⛶</button>
+    <button onclick="addFavorite()">⭐</button>
+    <select id="favorites" onchange="loadFavorite()">
+      <option value="">Favorites</option>
+    </select>
+  </header>
+  <iframe id="webview" src="https://www.bing.com"></iframe>
+  <script src="script.js"></script>
+</body>
+</html>
