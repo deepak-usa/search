@@ -1,55 +1,19 @@
-let historyStack = [];
-let currentIndex = -1;
+import { create, insert, search } from 'https://cdn.jsdelivr.net/npm/@orama/orama@latest/+esm';
 
-function search() {
-  const query = document.getElementById("searchBox").value;
-  if (!query) return;
+const db = await create({
+  schema: { title: 'string', content: 'string' }
+});
 
-  historyStack.push(query);
-  currentIndex = historyStack.length - 1;
+// Demo data
+await insert(db, { title: 'Microsoft Edge', content: 'A fast, secure browser by Microsoft.' });
+await insert(db, { title: 'GitHub Pages', content: 'Free hosting for static websites.' });
+await insert(db, { title: 'Orama', content: 'Lightweight JavaScript search engine.' });
 
-  fetchResults(query);
-}
-
-function fetchResults(query) {
-  const apiKey = "YOUR_BING_API_KEY"; // Replace with your Bing Search API key
-  const endpoint = `https://api.bing.microsoft.com/v7.0/search?q=${encodeURIComponent(query)}`;
-
-  fetch(endpoint, {
-    headers: { "Ocp-Apim-Subscription-Key": apiKey }
-  })
-  .then(res => res.json())
-  .then(data => {
-    const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "";
-    if (data.webPages) {
-      data.webPages.value.forEach(item => {
-        resultsDiv.innerHTML += `
-          <div class="result">
-            <a href="${item.url}" target="_blank">${item.name}</a>
-            <p>${item.snippet}</p>
-          </div>`;
-      });
-    }
-  });
-}
-
-function goBack() {
-  if (currentIndex > 0) {
-    currentIndex--;
-    fetchResults(historyStack[currentIndex]);
-  }
-}
-
-function goForward() {
-  if (currentIndex < historyStack.length - 1) {
-    currentIndex++;
-    fetchResults(historyStack[currentIndex]);
-  }
-}
-
-function reloadPage() {
-  if (currentIndex >= 0) {
-    fetchResults(historyStack[currentIndex]);
-  }
-}
+window.doSearch = async () => {
+  const query = document.getElementById('searchBox').value;
+  const results = await search(db, { term: query });
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = results.hits.map(hit =>
+    `<div class="result"><b>${hit.document.title}</b>: ${hit.document.content}</div>`
+  ).join('');
+};
