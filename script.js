@@ -5,14 +5,23 @@ let historyStack = [];
 let currentIndex = -1;
 
 function navigate() {
-  let url = addressBar.value;
-  if (!url.startsWith("http")) {
-    url = "https://www.bing.com/search?q=" + encodeURIComponent(url);
-  }
-  webview.src = url;
-  historyStack.push(url);
-  currentIndex = historyStack.length - 1;
+  if (!currentTab) return;
+  let query = document.getElementById("addressBar").value;
+
+  // If user typed a full URL, open it directly
+  let url = query.startsWith("http")
+    ? query
+    : "https://www.bing.com/search?q=" + encodeURIComponent(query);
+
+  // Instead of loading in iframe, open in a new tab
+  window.open(url, "_blank");
+
+  // Keep track in tab history (for UI consistency)
+  currentTab.history.push(url);
+  currentTab.index = currentTab.history.length - 1;
+  document.getElementById("addressBar").value = url;
 }
+
 
 function goBack() {
   if (currentIndex > 0) {
