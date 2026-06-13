@@ -1,29 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Orama Search Demo</title>
+  <meta charset="UTF-8">
+  <title>Edge-Style Search Engine</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <input id="searchBox" placeholder="Type to search...">
-  <button onclick="doSearch()">Search</button>
-  <div id="results"></div>
-
-  <script type="module">
-    import { create, insert, search } from 'https://cdn.jsdelivr.net/npm/@orama/orama@latest/+esm';
-
-    const db = await create({
-      schema: { title: 'string', content: 'string' }
-    });
-
-    await insert(db, { title: 'Edge Browser', content: 'Microsoft Edge is a fast browser.' });
-    await insert(db, { title: 'GitHub Pages', content: 'Host static sites easily.' });
-
-    window.doSearch = async () => {
-      const query = document.getElementById('searchBox').value;
-      const results = await search(db, { term: query });
-      document.getElementById('results').innerHTML =
-        results.hits.map(hit => `<p><b>${hit.document.title}</b>: ${hit.document.content}</p>`).join('');
-    };
-  </script>
+  <header>
+    <input id="searchBox" placeholder="Search...">
+    <button onclick="doSearch()">Search</button>
+  </header>
+  <main id="results"></main>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
